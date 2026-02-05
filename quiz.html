@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Class 10 History | औद्योगीकरण का युग</title>
+
+<style>
+body{
+    margin:0;
+    font-family: Arial, sans-serif;
+    background:#eef3f9;
+}
+
+/* HEADER */
+.header{
+    background:#0b3c6f;
+    color:white;
+    text-align:center;
+    padding:15px;
+}
+
+/* CONTAINER */
+.container{
+    max-width:800px;
+    margin:20px auto;
+    background:white;
+    padding:20px;
+    border-radius:8px;
+    box-shadow:0 0 8px rgba(0,0,0,0.2);
+    position:relative;
+    overflow:hidden;
+}
+
+/* WATERMARK */
+.container::before{
+    content:"NKS Class Room   NKS Class Room   NKS Class Room   NKS Class Room";
+    position:absolute;
+    top:0;
+    left:0;
+    width:200%;
+    height:200%;
+    font-size:40px;
+    font-weight:bold;
+    color:rgba(0,0,0,0.1);
+    transform:rotate(-25deg);
+    pointer-events:none;
+    z-index:1;
+}
+
+/* CONTENT ABOVE WATERMARK */
+.exam-info, .question, button, #result{
+    position:relative;
+    z-index:2;
+}
+
+.exam-info{
+    display:flex;
+    justify-content:space-between;
+    font-weight:bold;
+    margin-bottom:10px;
+}
+.timer{
+    color:#c0392b;
+}
+
+/* QUESTIONS */
+.question{
+    margin-bottom:15px;
+    border-bottom:1px solid #ddd;
+    padding-bottom:10px;
+}
+label{
+    display:block;
+    padding:7px;
+    margin:5px 0;
+    border:1px solid #ccc;
+    border-radius:4px;
+    background:#f9f9f9;
+    cursor:pointer;
+}
+.correct{
+    background:#d4edda;
+    border-color:#28a745;
+}
+.wrong{
+    background:#f8d7da;
+    border-color:#dc3545;
+}
+
+/* BUTTON */
+button{
+    width:100%;
+    padding:12px;
+    background:#0b3c6f;
+    color:white;
+    font-size:16px;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+/* RESULT */
+#result{
+    margin-top:20px;
+    padding:12px;
+    text-align:center;
+    font-weight:bold;
+    background:#f1f8ff;
+    border:1px solid #0b3c6f;
+}
+
+/* START POPUP */
+.popup{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.6);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:999;
+}
+.popup-box{
+    background:white;
+    padding:25px;
+    border-radius:8px;
+    text-align:center;
+    max-width:320px;
+}
+.popup-box h2{
+    margin:5px 0;
+}
+.start-btn{
+    background:#0b3c6f;
+    color:white;
+    padding:10px 20px;
+    border:none;
+    border-radius:6px;
+    font-size:16px;
+    cursor:pointer;
+}
+.hidden{
+    display:none;
+}
+</style>
+</head>
+
+<body>
+
+<!-- START TEST POPUP -->
+<div class="popup" id="startPopup">
+    <div class="popup-box">
+        <h2>Class 10 – History</h2>
+        <p style="font-weight:bold;">Chapter 3 : औद्योगीकरण का युग</p>
+        <hr>
+        <p>
+            ⏱️ Time: 5 Minutes<br>
+            📝 Total Questions: 10
+        </p>
+        <button class="start-btn" onclick="startTest()">Start Test</button>
+    </div>
+</div>
+
+<div class="header">
+    <h2>Class 10 – History</h2>
+    <p>Chapter 3 : औद्योगीकरण का युग</p>
+</div>
+
+<div class="container hidden" id="examBox">
+
+<div class="exam-info">
+    <div>Time Left:</div>
+    <div class="timer">⏱️ <span id="time">05:00</span></div>
+</div>
+
+<form id="quizForm"></form>
+
+<button onclick="submitTest()" type="button">Submit Answer Sheet</button>
+<div id="result"></div>
+
+</div>
+
+<script>
+const questions=[
+{q:"‘भूमंडलीकरण’ का मुख्य अर्थ क्या है?",o:["युद्ध","आपसी संपर्क","व्यापार","संस्कृति"],a:1},
+{q:"भूमंडलीकरण सबसे पहले किस क्षेत्र में शुरू हुआ?",o:["शिक्षा","राजनीति","व्यापार","खेल"],a:2},
+{q:"विश्व को जोड़ने में सबसे बड़ा योगदान किसका है?",o:["कृषि","परिवहन","धर्म","सेना"],a:1},
+{q:"प्राचीन भारत से कौन-सी वस्तुएँ निर्यात होती थीं?",o:["मशीन","मसाले","हथियार","कोयला"],a:1},
+{q:"सिल्क रूट का मुख्य उद्देश्य क्या था?",o:["धर्म","युद्ध","व्यापार","शिक्षा"],a:2},
+{q:"औद्योगिक क्रांति का प्रभाव क्या पड़ा?",o:["घटा","बढ़ा","कम","बंद"],a:1},
+{q:"उपनिवेशवाद का मुख्य उद्देश्य क्या था?",o:["शिक्षा","लोकतंत्र","कच्चा माल","संस्कृति"],a:2},
+{q:"19वीं शताब्दी में वैश्विक व्यापार किससे तेज़ हुआ?",o:["घोड़ा","साइकिल","स्टीमशिप","बैल"],a:2},
+{q:"आधुनिक भूमंडलीकरण में प्रमुख तकनीक?",o:["लिखना","इंटरनेट","डाक","रेडियो"],a:1},
+{q:"भूमंडलीकरण का नकारात्मक प्रभाव?",o:["रोजगार","सस्ता","स्थानीय दबाव","ज्ञान"],a:2}
+];
+
+const form=document.getElementById("quizForm");
+questions.forEach((it,i)=>{
+form.innerHTML+=`
+<div class="question">
+<h3>Q${i+1}. ${it.q}</h3>
+${it.o.map((op,j)=>`
+<label>
+<input type="radio" name="q${i}" value="${j}"> ${op}
+</label>`).join("")}
+</div>`;
+});
+
+let time=300, timer;
+
+function startTest(){
+document.getElementById("startPopup").style.display="none";
+document.getElementById("examBox").classList.remove("hidden");
+timer=setInterval(()=>{
+time--;
+let m=Math.floor(time/60), s=time%60;
+document.getElementById("time").innerText=`${m}:${s<10?'0':''}${s}`;
+if(time<=0){ clearInterval(timer); submitTest(); }
+},1000);
+}
+
+function submitTest(){
+clearInterval(timer);
+let score=0;
+questions.forEach((it,i)=>{
+let sel=document.querySelector(`input[name="q${i}"]:checked`);
+document.querySelectorAll(`input[name="q${i}"]`).forEach(r=>{
+if(r.value==it.a) r.parentElement.classList.add("correct");
+});
+if(sel){
+if(sel.value==it.a) score++;
+else sel.parentElement.classList.add("wrong");
+}
+});
+let percent=(score/questions.length)*100;
+document.getElementById("result").innerHTML=
+`Score: ${score}/10<br>
+Percentage: ${percent.toFixed(2)}%<br>
+Result: ${percent>=33?"PASS ✅":"FAIL ❌"}`;
+}
+</script>
+
+</body>
+</html>
